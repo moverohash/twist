@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 import re
+from fastapi.responses import JSONResponse
+
 
 app = FastAPI()
 
@@ -22,7 +24,6 @@ def home():
     </html>
     """
 
-
 @app.post("/incoming")
 async def incoming_email(request: Request):
     form = await request.form()
@@ -37,7 +38,7 @@ async def incoming_email(request: Request):
     print(f"📛 Assunto: {subject}")
     print("💬 Corpo:", body_plain)
 
-    # Procurar código de 6 dígitos (ex: código do Instagram)
+    # Procurar código de 6 dígitos
     code = None
     if body_plain:
         match = re.search(r"\b\d{6}\b", body_plain)
