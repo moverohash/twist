@@ -22,12 +22,32 @@ def home():
     </html>
     """
 
+
 @app.post("/incoming")
 async def incoming_email(request: Request):
-    data = await request.json()
-    body = data.get("body", "")
-    match = re.search(r"\b\d{6}\b", body)
-    if match:
-        code = match.group(0)
-        print("📨 Instagram code:", code)
-    return {"status": "ok"}
+    form = await request.form()
+    
+    sender = form.get("sender")
+    recipient = form.get("recipient")
+    subject = form.get("subject")
+    body_plain = form.get("body-plain")
+
+    print(f"📬 E-mail recebido de: {sender}")
+    print(f"📨 Enviado para: {recipient}")
+    print(f"📛 Assunto: {subject}")
+    print("💬 Corpo:", body_plain)
+
+    # Procurar código de 6 dígitos (ex: código do Instagram)
+    code = None
+    if body_plain:
+        match = re.search(r"\b\d{6}\b", body_plain)
+        if match:
+            code = match.group(0)
+            print(f"✅ Código detectado: {code}")
+
+    return JSONResponse({
+        "status": "ok",
+        "sender": sender,
+        "recipient": recipient,
+        "code": code
+    })
